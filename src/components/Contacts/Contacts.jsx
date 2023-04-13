@@ -1,24 +1,21 @@
 import { Item } from './ContactsItem';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getFilter, getContacts } from 'redax/selectors';
-import { deleteContact } from 'redax/contactsSlice';
+import { selectFilteredContacts } from 'redax/selectors';
+import { fetchAllContacts, fetchDeleteContact } from '../../redax/operations';
+
 
 export const Contacts = () => {
-  const contacts = useSelector(getContacts);
-  const { filter } = useSelector(getFilter);
+  const contactsList = useSelector(selectFilteredContacts);
 
-  const filteredContacts = () => {
-    if (!filter) return contacts;
-
-    return contacts.filter(({ name }) => {
-      return name.toLowerCase().includes(filter.toLowerCase());
-    });
-  };
-  const contactsList = filteredContacts();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchAllContacts());
+  }, [dispatch]);
+
   const removeContact = id => {
-    dispatch(deleteContact(id));
+    dispatch(fetchDeleteContact(id));
   };
 
   return contactsList.length <= 0 ? (
